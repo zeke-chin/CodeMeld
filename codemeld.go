@@ -11,7 +11,7 @@ import (
 	"github.com/atotto/clipboard"
 )
 
-const version = "0.1.1"
+const version = "0.1.2"
 
 func getCommonRoot(paths []string) string {
 	if len(paths) == 0 {
@@ -65,7 +65,7 @@ func processFiles(filePaths []string) (string, string, []string) {
 }
 
 func main() {
-	if os.Args[1] == "-V" || os.Args[1] == "--version" || os.Args[1] == "-v" {
+	if len(os.Args) == 2 && (os.Args[1] == "-V" || os.Args[1] == "--version" || os.Args[1] == "-v") {
 		fmt.Println(version)
 		os.Exit(0)
 	}

@@ -2,7 +2,7 @@
 
 CodeMeld 是一个简单的命令行工具，旨在帮助开发者将多个代码文件整合成一个易于大型语言模型（LLM）处理的格式。它自动提取共同的根路径，并将每个文件的内容格式化为 Markdown 代码块，附带相对路径信息。
 
-❌路径不支持空格❌
+❌ 路径不支持空格 ❌
 
 ## 功能
 
@@ -13,7 +13,9 @@ CodeMeld 是一个简单的命令行工具，旨在帮助开发者将多个代�
 
 ## 安装
 
-TODO
+```sh
+wget https://mirror.ghproxy.com/https://raw.githubusercontent.com/zeke-chin/CodeMeld/main/install.sh -O ~/codemeld.install.sh && chmod +X ~/codemeld.install.sh && sh ~/codemeld.install.sh && rm ~/codemeld.install.sh && codemeld -v
+```
 
 ## 使用方法
 
@@ -23,16 +25,25 @@ TODO
 codemeld "文件路径1 文件路径2 文件路径3 ..."
 ```
 
+
+
 例如：
 
 ```
 codemeld "/path/to/file1.py /path/to/file2.js /path/to/file3.rs"
 
 或者
+
 codemeld "/path/to/file1.py
 /path/to/file2.js
 /path/to/file3.rs"
 ```
+
+接下来你就可以直接粘贴在与LLM的文本输入框内
+
+后面接你需要询问的问题即可
+
+![image-20240802163120303](./assets/image-20240802163120303.png)
 
 ## 输出
 

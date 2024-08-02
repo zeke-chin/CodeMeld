@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/atotto/clipboard"
@@ -62,7 +63,7 @@ func processFiles(filePaths []string) (string, string, []string) {
 }
 
 func main() {
-	if len(os.Args) != 2 {
+	if len(os.Args) != 2 || os.Args[1] == "-h" || os.Args[1] == "--help" || isValidPath(os.Args[1]) {
 		printUsage()
 		os.Exit(1)
 	}
@@ -87,10 +88,18 @@ func main() {
 
 func printUsage() {
 	fmt.Println("用法 | Usage:")
-	fmt.Println(" codemeld <file1> <file2> <file3> ...")
+	fmt.Println(` codemeld "<file1> <file2> <file3> ..."`)
 	fmt.Println("\n描述 | Description:")
 	fmt.Println(" 将多个文件的内容以LLM更加容易理解的方式格式化并复制到剪贴板。")
 	fmt.Println(" Format and copy the contents of multiple files to the clipboard in a way that is easier for LLMs to understand.")
 	fmt.Println("\n示例 | Example:")
-	fmt.Println(" codemeld ./file1.txt /home/user/file2.go ~/file3.md")
+	fmt.Println(` codemeld "./file1.txt /home/user/file2.go ~/file3.md"`)
+}
+
+func isValidPath(path string) bool {
+	// 简单路径检查（根据需求可以扩展更复杂的检查）
+	// 在这个例子中，我们只做了一个简单的检查：路径是否包含非法字符
+	// 更复杂的检查可以使用正则表达式
+	re := regexp.MustCompile(`^[\w\-/\.]+$`)
+	return re.MatchString(path)
 }

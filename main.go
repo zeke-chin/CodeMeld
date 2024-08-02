@@ -84,19 +84,19 @@ func createApp() *cli.App {
 			&cli.StringFlag{
 				Name:        "files",
 				Aliases:     []string{"f"},
-				Usage:       "文件、文件夹目录 可以使用空格或者换行隔开",
+				Usage:       "文件、文件夹目录 可以使用空格或者换行隔开\teg: -f \"/path/to/directory file3.txt\" ",
 				Destination: &filesInput,
 			},
 			&cli.StringFlag{
 				Name:        "reg",
 				Aliases:     []string{"r"},
-				Usage:       "匹配文件后缀 使用空格或者换行隔开 eg: --reg \".go .py\"",
+				Usage:       "匹配文件后缀 使用空格或者换行隔开\teg: -r \".go .py\"",
 				Destination: &regInput,
 			},
 			&cli.StringFlag{
 				Name:        "ireg",
 				Aliases:     []string{"ir"},
-				Usage:       "忽略的文件后缀 使用空格或者换行隔开 eg: --ireg \".log .tmp\"",
+				Usage:       "忽略的文件后缀 使用空格或者换行隔开\teg: -ir \".log .tmp\"",
 				Destination: &iregInput,
 			},
 			&cli.BoolFlag{

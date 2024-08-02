@@ -22,6 +22,8 @@ CodeMeld 是一个简单的命令行工具，旨在帮助开发者将多个代�
 
 ## 安装
 
+mac / linux 直接可以使用shell命令安装 windows未测试
+
 ```sh
 wget https://mirror.ghproxy.com/https://raw.githubusercontent.com/zeke-chin/CodeMeld/main/install.sh -O ~/codemeld.install.sh && chmod +X ~/codemeld.install.sh && sh ~/codemeld.install.sh && rm ~/codemeld.install.sh && codemeld -v
 ```

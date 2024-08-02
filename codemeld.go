@@ -105,9 +105,6 @@ func printUsage() {
 }
 
 func isValidPath(path string) bool {
-	// 简单路径检查（根据需求可以扩展更复杂的检查）
-	// 在这个例子中，我们只做了一个简单的检查：路径是否包含非法字符
-	// 更复杂的检查可以使用正则表达式
 	re := regexp.MustCompile(`^[\w\-/\.]+$`)
 	return re.MatchString(path)
 }

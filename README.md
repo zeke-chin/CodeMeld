@@ -47,8 +47,9 @@ COMMANDS:
 
 GLOBAL OPTIONS:
    --files value, -f value   文件、文件夹目录 可以使用空格或者换行隔开
-   --reg value, -r value     匹配文件后缀 使用空格或者换行隔开
-   --ireg value, --ir value  忽略的文件后缀 使用空格或者换行隔开
+   --reg value, -r value     匹配文件后缀 使用空格或者换行隔开 eg: --reg ".go .py"
+   --ireg value, --ir value  忽略的文件后缀 使用空格或者换行隔开 eg: --ireg ".log .tmp"
+   --version, -v, -V         CodeMeld 版本 (default: false)
    --include-hidden, --ih    是否查看隐藏文件夹下的文件 (default: false)
    --help, -h                show help
 ```

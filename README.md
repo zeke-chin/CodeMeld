@@ -4,6 +4,15 @@ CodeMeld 是一个简单的命令行工具，旨在帮助开发者将多个代�
 
 ❌ 路径不支持空格 ❌
 
+## 为什么使用 CodeMeld？
+
+在与大型语言模型（如 GPT-3、GPT-4 等）协作时，通常需要提供足够的上下文信息。CodeMeld 允许您快速整合多个相关的代码文件，使其易于复制粘贴到与 LLM 的对话中。这样可以：
+
+1. 提供更完整的项目上下文
+2. 保持文件结构的清晰性
+3. 减少手动格式化的时间
+4. 提高与 LLM 协作的效率
+
 ## 功能
 
 - 自动检测多个文件的共同根路径
@@ -45,23 +54,3 @@ codemeld "/path/to/file1.py
 
 ![image-20240802163120303](./assets/image-20240802163120303.png)
 
-## 输出
-
-```
-Root path: /Volumes/data/work/workspace/github_work/SuperCV/client/supercv-vue/src-tauri
-
-3 file(s):
-  - src/main.rs
-  - src/clipboard_helper.rs
-  - tauri.conf.json
-Formatted content copied to clipboard.
-```
-
-## 为什么使用 CodeMeld？
-
-在与大型语言模型（如 GPT-3、GPT-4 等）协作时，通常需要提供足够的上下文信息。CodeMeld 允许您快速整合多个相关的代码文件，使其易于复制粘贴到与 LLM 的对话中。这样可以：
-
-1. 提供更完整的项目上下文
-2. 保持文件结构的清晰性
-3. 减少手动格式化的时间
-4. 提高与 LLM 协作的效率

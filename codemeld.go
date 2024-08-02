@@ -11,7 +11,7 @@ import (
 	"github.com/atotto/clipboard"
 )
 
-const version = "0.1.0"
+const version = "0.1.1"
 
 func getCommonRoot(paths []string) string {
 	if len(paths) == 0 {
@@ -85,7 +85,7 @@ func main() {
 	for _, path := range relativePaths {
 		fmt.Printf("  - %s\n", path)
 	}
-	err := clipboard.WriteAll(formattedContent)
+	err := clipboard.WriteAll(formattedContent + "\n\n")
 	if err != nil {
 		fmt.Printf("Error copying to clipboard: %v\n", err)
 	} else {

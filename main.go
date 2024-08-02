@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-const version = "0.1.2"
+const version = "0.2.1"
 
 var args AppArgs
 
@@ -98,6 +98,11 @@ func createApp() *cli.App {
 				Aliases:     []string{"ir"},
 				Usage:       "忽略的文件后缀 使用空格或者换行隔开",
 				Destination: &iregInput,
+			},
+			&cli.BoolFlag{
+				Name:    "version",
+				Aliases: []string{"v", "V"},
+				Usage:   "CodeMeld 版本",
 			},
 			&cli.BoolFlag{
 				Name:        "include-hidden",

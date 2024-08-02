@@ -90,13 +90,13 @@ func createApp() *cli.App {
 			&cli.StringFlag{
 				Name:        "reg",
 				Aliases:     []string{"r"},
-				Usage:       "匹配文件后缀 使用空格或者换行隔开",
+				Usage:       "匹配文件后缀 使用空格或者换行隔开 eg: --reg \".go .py\"",
 				Destination: &regInput,
 			},
 			&cli.StringFlag{
 				Name:        "ireg",
 				Aliases:     []string{"ir"},
-				Usage:       "忽略的文件后缀 使用空格或者换行隔开",
+				Usage:       "忽略的文件后缀 使用空格或者换行隔开 eg: --ireg \".log .tmp\"",
 				Destination: &iregInput,
 			},
 			&cli.BoolFlag{

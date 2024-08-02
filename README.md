@@ -35,26 +35,67 @@ wget https://mirror.ghproxy.com/https://raw.githubusercontent.com/zeke-chin/Code
 ```
 
 ## 使用方法
+```shell
+NAME:
+   codemeld - 一个将code内容格式化成LLM更友好的格式的剪切板命令行工具
 
-在命令行中运行以下命令：
+USAGE:
+   codemeld [global options] command [command options]
 
+COMMANDS:
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --files value, -f value   文件、文件夹目录 可以使用空格或者换行隔开
+   --reg value, -r value     匹配文件后缀 使用空格或者换行隔开
+   --ireg value, --ir value  忽略的文件后缀 使用空格或者换行隔开
+   --include-hidden, --ih    是否查看隐藏文件夹下的文件 (default: false)
+   --help, -h                show help
 ```
-codemeld "文件路径1 文件路径2 文件路径3 ..."
-```
+下面是一些 `codemeld` 工具的使用实例：
 
-例如：
+1. **指定单个文件**：
+   ```sh
+   codemeld --files "myfile.txt"
+   ```
 
-```
-codemeld "/path/to/file1.py /path/to/file2.js /path/to/file3.rs"
+2. **指定多个文件**：
+   ```sh
+   codemeld --files "file1.txt file2.txt"
+   ```
 
-或者
+3. **指定文件夹目录**：
+   ```sh
+   codemeld --files "/path/to/directory"
+   ```
 
-codemeld "/path/to/file1.py
-/path/to/file2.js
-/path/to/file3.rs"
-```
+4. **指定文件夹目录和文件**：
+   ```sh
+   codemeld --files "/path/to/directory file3.txt"
+   ```
 
-接下来你就可以直接粘贴在与 LLM 的文本输入框内
+5. **使用正则匹配文件后缀**：
+   ```sh
+   codemeld --files "/path/to/directory" --reg ".go .py"
+   ```
+
+6. **忽略特定文件后缀**：
+   ```sh
+   codemeld --files "/path/to/directory" --ireg ".log .tmp"
+   ```
+
+7. **查看隐藏文件夹中的文件**：
+   ```sh
+   codemeld --files "/path/to/directory" --include-hidden
+   ```
+
+8. **结合所有选项**：
+   ```sh
+   codemeld --files "/path/to/directory file1.txt" --reg ".go .py" --ireg ".log" --include-hidden
+   ```
+
+
+接下来你就可以直接将剪切板中的内容 粘贴给LLM
 
 后面接你需要询问的问题即可
 

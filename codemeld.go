@@ -11,6 +11,8 @@ import (
 	"github.com/atotto/clipboard"
 )
 
+const version = "0.1.0"
+
 func getCommonRoot(paths []string) string {
 	if len(paths) == 0 {
 		return ""
@@ -63,6 +65,11 @@ func processFiles(filePaths []string) (string, string, []string) {
 }
 
 func main() {
+	if os.Args[1] == "-V" || os.Args[1] == "--version" || os.Args[1] == "-v" {
+		fmt.Println(version)
+		os.Exit(0)
+	}
+
 	if len(os.Args) != 2 || os.Args[1] == "-h" || os.Args[1] == "--help" || isValidPath(os.Args[1]) {
 		printUsage()
 		os.Exit(1)
@@ -89,6 +96,7 @@ func main() {
 func printUsage() {
 	fmt.Println("用法 | Usage:")
 	fmt.Println(` codemeld "<file1> <file2> <file3> ..."`)
+	fmt.Println(` codemeld -V 输出版本号`)
 	fmt.Println("\n描述 | Description:")
 	fmt.Println(" 将多个文件的内容以LLM更加容易理解的方式格式化并复制到剪贴板。")
 	fmt.Println(" Format and copy the contents of multiple files to the clipboard in a way that is easier for LLMs to understand.")

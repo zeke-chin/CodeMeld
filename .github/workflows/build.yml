@@ -26,19 +26,6 @@ jobs:
     - name: Test
       run: go test -v ./...
 
-  # lint:
-  #   name: Lint
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-go@v3
-  #       with:
-  #         go-version: '1.22'
-  #     - name: golangci-lint
-  #       uses: golangci/golangci-lint-action@v3
-  #       with:
-  #         version: latest
-
   cross-compile:
     needs: [build]
     runs-on: ubuntu-latest
@@ -59,43 +46,49 @@ jobs:
       with:
         name: codemeld-${{ matrix.os }}-${{ matrix.arch }}
         path: codemeld-${{ matrix.os }}-${{ matrix.arch }}
-
-  release:
-    needs: [cross-compile]
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download all artifacts
-        uses: actions/download-artifact@v3
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Upload Release Assets
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs').promises;
-            const { repo: { owner, repo }, sha } = context;
-            const release = await github.rest.repos.getReleaseByTag({
-              owner, repo, tag: context.ref.replace('refs/tags/', '')
-            });
-            const assets = await fs.readdir('.');
-            for (const asset of assets) {
-              if (asset.startsWith('codemeld-')) {
-                await github.rest.repos.uploadReleaseAsset({
-                  owner, repo,
-                  release_id: release.data.id,
-                  name: asset,
-                  data: await fs.readFile(asset)
-                });
-              }
+        
+release:
+  needs: [cross-compile]
+  runs-on: ubuntu-latest
+  if: startsWith(github.ref, 'refs/tags/')
+  steps:
+    - uses: actions/checkout@v3
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Assets
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs').promises;
+          const path = require('path');
+          const { repo: { owner, repo }, sha } = context;
+          const release = await github.rest.repos.getReleaseByTag({
+            owner, repo, tag: context.ref.replace('refs/tags/', '')
+          });
+          const artifactsDir = path.join(process.cwd(), 'artifacts');
+          const artifacts = await fs.readdir(artifactsDir);
+          for (const artifact of artifacts) {
+            const artifactPath = path.join(artifactsDir, artifact);
+            const stat = await fs.stat(artifactPath);
+            if (stat.isFile() && artifact.startsWith('codemeld-')) {
+              await github.rest.repos.uploadReleaseAsset({
+                owner, repo,
+                release_id: release.data.id,
+                name: artifact,
+                data: await fs.readFile(artifactPath)
+              });
             }
+          }

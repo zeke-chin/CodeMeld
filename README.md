@@ -56,22 +56,22 @@ GLOBAL OPTIONS:
 
 1. **指定单个文件**：
    ```sh
-   codemeld --files "myfile.txt"
+   codemeld -f "myfile.txt"
    ```
 
 2. **指定多个文件**：
    ```sh
-   codemeld --files "file1.txt file2.txt"
+   codemeld -f "file1.txt file2.txt"
    ```
 
 3. **指定文件夹目录**：
    ```sh
-   codemeld --files "/path/to/directory"
+   codemeld -f "/path/to/directory"
    ```
 
 4. **指定文件夹目录和文件**：
    ```sh
-   codemeld --files "/path/to/directory file3.txt"
+   codemeld -f "/path/to/directory file3.txt"
    ```
 
 5. **使用正则匹配文件后缀**：

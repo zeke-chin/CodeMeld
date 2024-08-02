@@ -22,7 +22,13 @@ CodeMeld 是一个简单的命令行工具，旨在帮助开发者将多个代�
 
 ## 安装
 
-mac / linux 直接可以使用shell命令安装 windows未测试
+mac / linux 直接可以使用 shell 命令安装 windows 未测试
+
+```sh
+wget https://raw.githubusercontent.com/zeke-chin/CodeMeld/main/install.sh -O ~/codemeld.install.sh && chmod +X ~/codemeld.install.sh && sh ~/codemeld.install.sh && rm ~/codemeld.install.sh && codemeld -v
+```
+
+国内镜像
 
 ```sh
 wget https://mirror.ghproxy.com/https://raw.githubusercontent.com/zeke-chin/CodeMeld/main/install.sh -O ~/codemeld.install.sh && chmod +X ~/codemeld.install.sh && sh ~/codemeld.install.sh && rm ~/codemeld.install.sh && codemeld -v
@@ -36,8 +42,6 @@ wget https://mirror.ghproxy.com/https://raw.githubusercontent.com/zeke-chin/Code
 codemeld "文件路径1 文件路径2 文件路径3 ..."
 ```
 
-
-
 例如：
 
 ```
@@ -50,9 +54,8 @@ codemeld "/path/to/file1.py
 /path/to/file3.rs"
 ```
 
-接下来你就可以直接粘贴在与LLM的文本输入框内
+接下来你就可以直接粘贴在与 LLM 的文本输入框内
 
 后面接你需要询问的问题即可
 
 ![image-20240802163120303](./assets/image-20240802163120303.png)
-

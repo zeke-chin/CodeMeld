@@ -40,12 +40,16 @@ jobs:
       with:
         go-version: '1.22'
     - name: Cross compile
-      run: GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags="-X 'main.Version=$(git describe --tags --always --dirty)'" -o codemeld-${{ matrix.os }}-${{ matrix.arch }} .
+      run: |
+        GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags="-X 'main.Version=$(git describe --tags --always --dirty)'" -o codemeld-${{ matrix.os }}-${{ matrix.arch }} .
+        if [ "${{ matrix.os }}" = "windows" ]; then
+          mv codemeld-${{ matrix.os }}-${{ matrix.arch }} codemeld-${{ matrix.os }}-${{ matrix.arch }}.exe
+        fi
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: codemeld-${{ matrix.os }}-${{ matrix.arch }}
-        path: codemeld-${{ matrix.os }}-${{ matrix.arch }}
+        path: codemeld-${{ matrix.os }}-${{ matrix.arch }}*
 
   release:
     needs: [cross-compile]
@@ -68,27 +72,13 @@ jobs:
           draft: false
           prerelease: false
       - name: Upload Release Assets
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs').promises;
-            const path = require('path');
-            const { repo: { owner, repo }, sha } = context;
-            const release = await github.rest.repos.getReleaseByTag({
-              owner, repo, tag: context.ref.replace('refs/tags/', '')
-            });
-            const artifactsDir = path.join(process.cwd(), 'artifacts');
-            const artifacts = await fs.readdir(artifactsDir);
-            for (const artifact of artifacts) {
-              const artifactPath = path.join(artifactsDir, artifact);
-              const stat = await fs.stat(artifactPath);
-              if (stat.isFile() && artifact.startsWith('codemeld-')) {
-                await github.rest.repos.uploadReleaseAsset({
-                  owner, repo,
-                  release_id: release.data.id,
-                  name: artifact,
-                  data: await fs.readFile(artifactPath)
-                });
-              }
-            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -x
+          assets_dir="./artifacts"
+          for asset in "$assets_dir"/*/*; do
+            asset_name=$(basename "$asset")
+            echo "Uploading $asset_name"
+            gh release upload ${{ github.ref_name }} "$asset" --clobber
+          done

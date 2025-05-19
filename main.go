@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-const version = "0.2.2"
+const version = "0.2.4"
 const maxCacheFiles = 50
 
 var args AppArgs

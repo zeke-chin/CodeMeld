@@ -1,19 +1,117 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"github.com/atotto/clipboard"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/urfave/cli/v2"
 )
 
-const version = "0.2.1"
+const version = "0.2.2"
+const maxCacheFiles = 50
 
 var args AppArgs
+
+// 生成8位随机ID
+func generateID() string {
+	b := make([]byte, 4)
+	_, err := rand.Read(b)
+	if err != nil {
+		return fmt.Sprintf("%d", time.Now().UnixNano())[:8]
+	}
+	return hex.EncodeToString(b)
+}
+
+// 确保缓存目录存在
+func ensureCacheDir() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	cacheDir := filepath.Join(homeDir, ".cache", "codemeld")
+	err = os.MkdirAll(cacheDir, 0755)
+	if err != nil {
+		return "", err
+	}
+
+	return cacheDir, nil
+}
+
+// 清理旧缓存文件
+func cleanOldCacheFiles(cacheDir string) error {
+	files, err := ioutil.ReadDir(cacheDir)
+	if err != nil {
+		return err
+	}
+
+	if len(files) <= maxCacheFiles {
+		return nil
+	}
+
+	// 按修改时间排序
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].ModTime().Before(files[j].ModTime())
+	})
+
+	// 删除最旧的文件，直到文件数量不超过maxCacheFiles
+	for i := 0; i < len(files)-maxCacheFiles; i++ {
+		err := os.Remove(filepath.Join(cacheDir, files[i].Name()))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// 保存内容到缓存文件
+func saveToCache(content string) (string, string, error) {
+	cacheDir, err := ensureCacheDir()
+	if err != nil {
+		return "", "", fmt.Errorf("创建缓存目录失败: %w", err)
+	}
+
+	// 清理旧缓存文件
+	err = cleanOldCacheFiles(cacheDir)
+	if err != nil {
+		fmt.Printf("警告: 清理旧缓存文件失败: %v\n", err)
+		// 继续执行，不终止整个流程
+	}
+
+	// 生成ID和文件名
+	id := generateID()
+	fileName := fmt.Sprintf("%s_%s.md", time.Now().Format("20060102_150405"), id)
+	filePath := filepath.Join(cacheDir, fileName)
+
+	// 分块写入大文件内容 (Go默认使用UTF-8编码)
+	f, err := os.Create(filePath)
+	if err != nil {
+		return "", "", fmt.Errorf("创建缓存文件失败: %w", err)
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(content)
+	if err != nil {
+		return "", "", fmt.Errorf("写入缓存文件失败: %w", err)
+	}
+
+	// 确保所有内容都写入磁盘
+	err = f.Sync()
+	if err != nil {
+		return "", "", fmt.Errorf("同步缓存文件失败: %w", err)
+	}
+
+	return id, filePath, nil
+}
 
 func getCommonRoot(paths []string) string {
 	if len(paths) == 0 {
@@ -194,6 +292,29 @@ func shouldIncludeFile(filePath string, args AppArgs) bool {
 	return false
 }
 
+// 获取文件扩展名集合
+func getFileExtensions(paths []string) []string {
+	extMap := make(map[string]bool)
+	
+	for _, path := range paths {
+		ext := filepath.Ext(path)
+		if ext != "" {
+			extMap[ext] = true
+		}
+	}
+	
+	// 将map转换为切片
+	var extensions []string
+	for ext := range extMap {
+		extensions = append(extensions, ext)
+	}
+	
+	// 排序扩展名，使输出更易读
+	sort.Strings(extensions)
+	
+	return extensions
+}
+
 func main() {
 	app := createApp()
 	err := app.Run(os.Args)
@@ -208,6 +329,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	if len(filePaths) == 0 {
+		fmt.Println("没有匹配的文件")
+		os.Exit(0)
+	}
+
 	rootPath, formattedContent, relativePaths := processFiles(filePaths)
 
 	fmt.Printf("Root path: %s\n\n", rootPath)
@@ -215,10 +341,37 @@ func main() {
 	for _, path := range relativePaths {
 		fmt.Printf("  - %s\n", path)
 	}
+
+	// 分别处理剪贴板和缓存
+	contentSize := len(formattedContent)
+	fmt.Printf("内容大小: %d 字节\n", contentSize)
+
+	// 先保存到缓存文件
+	id, filePath, err := saveToCache(formattedContent + "\n\n")
+	if err != nil {
+		fmt.Printf("保存到缓存文件失败: %v\n", err)
+	} else {
+		fmt.Printf("Cache ID: %s\n", id)
+		fmt.Printf("Cache file: %s\n", filePath)
+	}
+
+	// 然后尝试写入剪贴板
 	err = clipboard.WriteAll(formattedContent + "\n\n")
 	if err != nil {
-		fmt.Printf("Error copying to clipboard: %v\n", err)
+		fmt.Printf("复制到剪贴板失败: %v\n", err)
+		fmt.Println("内容太大无法复制到剪贴板，但已保存到缓存文件")
 	} else {
-		fmt.Println("Formatted content copied to clipboard.")
+		fmt.Println("内容已复制到剪贴板")
 	}
+	
+	// 输出文件扩展名集合
+	extensions := getFileExtensions(relativePaths)
+	fmt.Print("文件类型: (")
+	for i, ext := range extensions {
+		if i > 0 {
+			fmt.Print(", ")
+		}
+		fmt.Print(ext)
+	}
+	fmt.Println(")")
 }
